@@ -30,4 +30,26 @@ function isNewerVersion(newVersion, curVersion) {
    }
 }
 
-module.exports = isNewerVersion;
+// Looks for `repoUrl` to be included in `package.dependencies`
+// and checkes for `version` to be newer.
+// Returns true if so and false otherwise
+//
+// - `pack`: contents of a `package.json`
+// - `dependency`: {
+//    url: <normalized repository url, e.g. 'git://github.com/user/repo'>,
+//    version: 'X.Y.Z'
+// }
+function checkDepVersion(pack, dependency) {
+   var urlRegex = new RegExp(dependency.url + "#(.*)");
+   for (dep in pack.dependencies) {
+      var match = urlRegex.exec(pack.dependencies[dep]);
+      if (match) {
+         var currentVersion = match[1];
+         return isNewerVersion(dependency.version, currentVersion);
+      }
+   }
+   return false;
+}
+
+module.exports.isNewerVersion = isNewerVersion;
+module.exports.checkDepVersion = checkDepVersion;
