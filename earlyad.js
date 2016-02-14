@@ -15,12 +15,18 @@ function isNewerVersion(newVersion, curVersion) {
 }
 
 function normalize(url) {
+   // 'user/repo#x.y.z' format, with optional version
+   var pattern = /(^[^\/]+\/[^\/#]+)(#.*)?$/;
    if (url.startsWith('git://')) {
       return url;
    }
-   else if (/^[^\/]+\/[^\/]+$/.test(url)) {
-      // 'user/repo' format
-      return "git://github.com/" + url + ".git";
+   else {
+      var match = pattern.exec(url);
+      if (match) {
+         var nurl = "git://github.com/" + match[1] + ".git";
+         if (match[2]) nurl += match[2];
+         return nurl;
+      }
    }
 }
 
@@ -37,7 +43,7 @@ function checkDepVersion(pack, dependency) {
    var depUrl = normalize(dependency.url);
    var urlRegex = new RegExp(depUrl + "#(.*)");
    for (dep in pack.dependencies) {
-      var match = urlRegex.exec(pack.dependencies[dep]);
+      var match = urlRegex.exec(normalize(pack.dependencies[dep]));
       if (match) {
          var currentVersion = match[1];
          return isNewerVersion(dependency.version, currentVersion);

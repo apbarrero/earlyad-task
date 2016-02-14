@@ -52,7 +52,7 @@ describe('Early adopter', function() {
             "version": "1.0.0",
             "dependencies": {
                "bar": "git://github.com/baz/bar.git#1.0.0",
-               "bar2": "git://github.com/baz/bar2.git#1.2.3"
+               "bar2": "baz/bar2#1.2.3"
             }
          };
 
@@ -79,7 +79,7 @@ describe('Early adopter', function() {
             "version": "1.0.0",
             "dependencies": {
                "bar": "git://github.com/baz/bar.git#1.0.0",
-               "bar2": "git://github.com/baz/bar2.git#1.2.3"
+               "bar2": "baz/bar2#1.2.3"
             }
          };
 
