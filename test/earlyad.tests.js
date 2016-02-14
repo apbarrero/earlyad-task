@@ -83,6 +83,9 @@ describe('Early adopter', function() {
          it('should return null if dependency is not included in package dependencies', function() {
             assert.isNull(checkDepVersion(pack, { url: "git://github.com/baz/notfound.git", version: "1.0.0" }));
          });
+         it('should return null if dependency version is not valid semantic version', function() {
+            assert.isNull(checkDepVersion(pack, { url: "git://github.com/baz/bar.git", version: "invalid version" }));
+         });
       });
 
       describe('with github \'user/repo\' URLs', function() {
@@ -121,6 +124,31 @@ describe('Early adopter', function() {
          });
          it('should return null if dependency is not included in package dependencies', function() {
             assert.isNull(checkDepVersion(pack, { url: "baz/notfound", version: "1.0.0" }));
+         });
+         it('should return null if dependency version is not valid semantic version', function() {
+            assert.isNull(checkDepVersion(pack, { url: "baz/bar", version: "invalid version" }));
+         });
+      });
+
+      describe('with package dependencies that have URLs without semantic version', function() {
+         var pack = {
+            "name": "foo",
+            "version": "1.0.0",
+            "dependencies": {
+               "bar": "git://github.com/baz/bar.git",
+               "bar2": "git://github.com/baz/bar2.git#branch",
+               "bar3": "baz/bar3",
+               "bar4": "baz/bar4#branch"
+            }
+         };
+
+         it('should return null if dependency in package dependencies has no version', function() {
+            assert.isNull(checkDepVersion(pack, { url: "baz/bar", version: "1.2.3" }));
+            assert.isNull(checkDepVersion(pack, { url: "baz/bar3", version: "1.2.3" }));
+         });
+         it('should return null if dependency in package dependencies has an invalid semantic version', function() {
+            assert.isNull(checkDepVersion(pack, { url: "baz/bar2", version: "1.2.3" }));
+            assert.isNull(checkDepVersion(pack, { url: "baz/bar4", version: "1.2.3" }));
          });
       });
    });
