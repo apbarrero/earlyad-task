@@ -14,17 +14,28 @@ function isNewerVersion(newVersion, curVersion) {
        && semver.gt(newVersion, curVersion);
 }
 
+function normalize(url) {
+   if (url.startsWith('git://')) {
+      return url;
+   }
+   else if (/^[^\/]+\/[^\/]+$/.test(url)) {
+      // 'user/repo' format
+      return "git://github.com/" + url + ".git";
+   }
+}
+
 // Looks for `repoUrl` to be included in `package.dependencies`
-// and checkes for `version` to be newer.
+// and checks for `version` to be newer.
 // Returns true if so and false otherwise
 //
 // - `pack`: contents of a `package.json`
 // - `dependency`: {
-//    url: <normalized repository url, e.g. 'git://github.com/user/repo'>,
+//    url: "git URL, e.g. 'git://github.com/user/repo' or 'user/repo' for github repos",
 //    version: 'X.Y.Z'
 // }
 function checkDepVersion(pack, dependency) {
-   var urlRegex = new RegExp(dependency.url + "#(.*)");
+   var depUrl = normalize(dependency.url);
+   var urlRegex = new RegExp(depUrl + "#(.*)");
    for (dep in pack.dependencies) {
       var match = urlRegex.exec(pack.dependencies[dep]);
       if (match) {
