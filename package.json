@@ -15,6 +15,9 @@
   ],
   "author": "Antonio Perez Barrero <apbarrero@gmail.com>",
   "license": "ISC",
+  "dependencies": {
+     "semver": "~5.1.0"
+  },
   "devDependencies": {
      "chai": "~1.10.0",
      "mocha": "~2.1.0"
