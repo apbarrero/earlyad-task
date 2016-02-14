@@ -56,20 +56,32 @@ describe('Early adopter', function() {
             }
          };
 
-         it('should return true if dependency is listed within package with a lesser version', function() {
-            assert.ok(checkDepVersion(pack, { url: "git://github.com/baz/bar.git", version: "1.0.1" }));
-            assert.ok(checkDepVersion(pack, { url: "git://github.com/baz/bar2.git", version: "1.3.0" }));
+         it('should return updated list of dependencies if dependency is listed within package with a lesser version', function() {
+            assert.deepEqual(
+               checkDepVersion(pack, { url: "git://github.com/baz/bar.git", version: "1.0.1" }),
+               {
+                  "bar": "git://github.com/baz/bar.git#1.0.1",
+                  "bar2": "baz/bar2#1.2.3"
+               }
+            );
+            assert.deepEqual(
+               checkDepVersion(pack, { url: "git://github.com/baz/bar2.git", version: "1.3.0" }),
+               {
+                  "bar": "git://github.com/baz/bar.git#1.0.0",
+                  "bar2": "baz/bar2#1.3.0"
+               }
+            );
          });
-         it('should return false if dependency is listed within package with a greater version', function() {
-            assert.notOk(checkDepVersion(pack, { url: "git://github.com/baz/bar.git", version: "0.9.0" }));
-            assert.notOk(checkDepVersion(pack, { url: "git://github.com/baz/bar2.git", version: "1.1.10" }));
+         it('should return null if dependency is listed within package with a greater version', function() {
+            assert.isNull(checkDepVersion(pack, { url: "git://github.com/baz/bar.git", version: "0.9.0" }));
+            assert.isNull(checkDepVersion(pack, { url: "git://github.com/baz/bar2.git", version: "1.1.10" }));
          });
-         it('should return false if dependency is listed within package with the same version', function() {
-            assert.notOk(checkDepVersion(pack, { url: "git://github.com/baz/bar.git", version: "1.0.0" }));
-            assert.notOk(checkDepVersion(pack, { url: "git://github.com/baz/bar2.git", version: "1.2.3" }));
+         it('should return null if dependency is listed within package with the same version', function() {
+            assert.isNull(checkDepVersion(pack, { url: "git://github.com/baz/bar.git", version: "1.0.0" }));
+            assert.isNull(checkDepVersion(pack, { url: "git://github.com/baz/bar2.git", version: "1.2.3" }));
          });
-         it('should return false if dependency is not included in package dependencies', function() {
-            assert.notOk(checkDepVersion(pack, { url: "git://github.com/baz/notfound.git", version: "1.0.0" }));
+         it('should return null if dependency is not included in package dependencies', function() {
+            assert.isNull(checkDepVersion(pack, { url: "git://github.com/baz/notfound.git", version: "1.0.0" }));
          });
       });
 
@@ -83,20 +95,32 @@ describe('Early adopter', function() {
             }
          };
 
-         it('should return true if dependency is listed within package with a lesser version', function() {
-            assert.ok(checkDepVersion(pack, { url: "baz/bar", version: "1.0.1" }));
-            assert.ok(checkDepVersion(pack, { url: "baz/bar2", version: "1.3.0" }));
+         it('should return updated list of dependencies if dependency is listed within package with a lesser version', function() {
+            assert.deepEqual(
+               checkDepVersion(pack, { url: "git://github.com/baz/bar.git", version: "1.0.1" }),
+               {
+                  "bar": "git://github.com/baz/bar.git#1.0.1",
+                  "bar2": "baz/bar2#1.2.3"
+               }
+            );
+            assert.deepEqual(
+               checkDepVersion(pack, { url: "git://github.com/baz/bar2.git", version: "1.3.0" }),
+               {
+                  "bar": "git://github.com/baz/bar.git#1.0.0",
+                  "bar2": "baz/bar2#1.3.0"
+               }
+            );
          });
-         it('should return false if dependency is listed within package with a greater version', function() {
-            assert.notOk(checkDepVersion(pack, { url: "baz/bar", version: "0.9.0" }));
-            assert.notOk(checkDepVersion(pack, { url: "baz/bar2", version: "1.1.10" }));
+         it('should return null if dependency is listed within package with a greater version', function() {
+            assert.isNull(checkDepVersion(pack, { url: "baz/bar", version: "0.9.0" }));
+            assert.isNull(checkDepVersion(pack, { url: "baz/bar2", version: "1.1.10" }));
          });
-         it('should return false if dependency is listed within package with the same version', function() {
-            assert.notOk(checkDepVersion(pack, { url: "baz/bar", version: "1.0.0" }));
-            assert.notOk(checkDepVersion(pack, { url: "baz/bar2", version: "1.2.3" }));
+         it('should return null if dependency is listed within package with the same version', function() {
+            assert.isNull(checkDepVersion(pack, { url: "baz/bar", version: "1.0.0" }));
+            assert.isNull(checkDepVersion(pack, { url: "baz/bar2", version: "1.2.3" }));
          });
-         it('should return false if dependency is not included in package dependencies', function() {
-            assert.notOk(checkDepVersion(pack, { url: "baz/notfound", version: "1.0.0" }));
+         it('should return null if dependency is not included in package dependencies', function() {
+            assert.isNull(checkDepVersion(pack, { url: "baz/notfound", version: "1.0.0" }));
          });
       });
    });

@@ -32,7 +32,9 @@ function normalize(url) {
 
 // Looks for `repoUrl` to be included in `package.dependencies`
 // and checks for `version` to be newer.
-// Returns true if so and false otherwise
+//
+// Returns the updated `dependencies` object for `package` if so
+// and null otherwise
 //
 // - `pack`: contents of a `package.json`
 // - `dependency`: {
@@ -46,10 +48,14 @@ function checkDepVersion(pack, dependency) {
       var match = urlRegex.exec(normalize(pack.dependencies[dep]));
       if (match) {
          var currentVersion = match[1];
-         return isNewerVersion(dependency.version, currentVersion);
+         if (isNewerVersion(dependency.version, currentVersion)) {
+            var dependencies = JSON.parse(JSON.stringify(pack.dependencies));
+            dependencies[dep] = dependencies[dep].replace(/#.*$/, "#" + dependency.version);
+            return dependencies;
+         }
       }
    }
-   return false;
+   return null;
 }
 
 module.exports.isNewerVersion = isNewerVersion;
