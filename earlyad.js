@@ -30,7 +30,7 @@ function normalize(url) {
    }
 }
 
-// Looks for `repoUrl` to be included in `package.dependencies`
+// Looks for `dependency.url` to be included in `package.dependencies`
 // and checks for `version` to be newer.
 //
 // Returns the updated `dependencies` object for `package` if so
