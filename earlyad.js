@@ -58,5 +58,15 @@ function checkDepVersion(pack, dependency) {
    return null;
 }
 
+// Check a `repo` to see if `dependency` is included in its
+// dependency list with version lesser than `dependency.version`
+//
+// Return the corresponding package.json updated value for
+// `dependencies` property
+function checkDepRepo(repo, dependency) {
+   return {};
+}
+
 module.exports.isNewerVersion = isNewerVersion;
 module.exports.checkDepVersion = checkDepVersion;
+module.exports.checkDepRepo = checkDepRepo;

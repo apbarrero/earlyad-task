@@ -3,6 +3,7 @@
 var EarlyAd = require('../earlyad');
 var isNewerVersion = EarlyAd.isNewerVersion;
 var checkDepVersion = EarlyAd.checkDepVersion;
+var checkDepRepo = EarlyAd.checkDepRepo;
 var assert = require('chai').assert;
 
 describe('Early adopter', function() {
@@ -150,6 +151,20 @@ describe('Early adopter', function() {
             assert.isNull(checkDepVersion(pack, { url: "baz/bar2", version: "1.2.3" }));
             assert.isNull(checkDepVersion(pack, { url: "baz/bar4", version: "1.2.3" }));
          });
+      });
+   });
+
+   describe('checkDepRepo', function() {
+      var repo = 'git://github.com/apbarrero/earlyad.git';
+
+      it('should return the repository dependency list properly updated when one dependency needs to be updated', function() {
+         var newSemver = { url: 'git://github.com/npm/node-semver.git', version: '5.2.0' };
+         assert.deepEqual(
+            checkDepRepo(repo, newSemver),
+            {
+               "semver": "git://github.com/apbarrero/earlyad.git#5.2.0"
+            }
+         );
       });
    });
 });
