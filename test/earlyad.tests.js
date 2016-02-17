@@ -5,6 +5,7 @@ var isNewerVersion = EarlyAd.isNewerVersion;
 var checkDepVersion = EarlyAd.checkDepVersion;
 var checkDepRepo = EarlyAd.checkDepRepo;
 var extractUserRepo = EarlyAd.extractUserRepo;
+var fetchPackageJson = EarlyAd.fetchPackageJson;
 var assert = require('chai').assert;
 
 describe('Early adopter', function() {
@@ -170,6 +171,15 @@ describe('Early adopter', function() {
       });
       it('should return null if an invalid url is passed', function() {
          assert.isNull(extractUserRepo('this is not a valid URL'));
+      });
+   });
+
+   describe('fetchPackageJson', function() {
+      it('should return package.json contents for a github repository', function() {
+         fetchPackageJson('apbarrero/earlyad').then(function(pack) {
+            assert.equal(pack.name, 'earlyad');
+            assert.equal(pack.description, "Early adopter is a node.js dependency checker and updater");
+         });
       });
    });
 

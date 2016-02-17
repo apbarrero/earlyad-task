@@ -16,7 +16,9 @@
   "author": "Antonio Perez Barrero <apbarrero@gmail.com>",
   "license": "ISC",
   "dependencies": {
-     "semver": "git://github.com/npm/node-semver.git#v5.1.0"
+     "semver": "git://github.com/npm/node-semver.git#v5.1.0",
+     "github": "~0.2.4",
+     "promisify-node": "~0.3.0"
   },
   "devDependencies": {
      "chai": "~1.10.0",

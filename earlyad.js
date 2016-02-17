@@ -1,6 +1,22 @@
 #!/usr/bin/env node
 
 var semver = require('semver');
+var GitHubApi = require('github');
+var promisify = require('promisify-node');
+
+github = new GitHubApi({
+   // required
+   version: "3.0.0",
+   // optional
+   debug: true,
+   protocol: "https",
+   host: "api.github.com",
+   pathPrefix: "",
+   timeout: 5000,
+   headers: {
+      "user-agent": "auth0-pr-checker"
+   }
+});
 
 // Checks if `newVersion` is actually greater than `curVersion`
 //
@@ -73,6 +89,19 @@ function extractUserRepo(url) {
    return null;
 }
 
+// Return the contents of `package.json` for a github repo at `repoUrl`
+// `repoUrl` may have a full git or abbreviated URL
+function fetchPackageJson(repoUrl, ref) {
+   var repo = extractUserRepo(repoUrl);
+   return promisify(github.repos.getContent)({
+      user: repo.user,
+      repo: repo.repo,
+      path: "package.json"
+   }).then(function(err, res) {
+      return JSON.parse(new Buffer(res.content, 'base64').toString('ascii'));
+   });
+}
+
 // Check a `repo` to see if `dependency` is included in its
 // dependency list with version lesser than `dependency.version`
 //
@@ -85,4 +114,5 @@ function checkDepRepo(repo, dependency) {
 module.exports.isNewerVersion = isNewerVersion;
 module.exports.checkDepVersion = checkDepVersion;
 module.exports.extractUserRepo = extractUserRepo;
+module.exports.fetchPackageJson = fetchPackageJson;
 module.exports.checkDepRepo = checkDepRepo;
