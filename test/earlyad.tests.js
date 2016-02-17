@@ -4,6 +4,7 @@ var EarlyAd = require('../earlyad');
 var isNewerVersion = EarlyAd.isNewerVersion;
 var checkDepVersion = EarlyAd.checkDepVersion;
 var checkDepRepo = EarlyAd.checkDepRepo;
+var extractUserRepo = EarlyAd.extractUserRepo;
 var assert = require('chai').assert;
 
 describe('Early adopter', function() {
@@ -154,7 +155,25 @@ describe('Early adopter', function() {
       });
    });
 
-   describe('checkDepRepo', function() {
+   describe('extractUserRepo', function() {
+      it('should extract user and repo name from full github URL', function() {
+         assert.deepEqual(
+            extractUserRepo('git://github.com/apbarrero/earlyad.git'),
+            { user: 'apbarrero', repo: 'earlyad' }
+         );
+      });
+      it('should extract user and repo name from abbreviated github URL', function() {
+         assert.deepEqual(
+            extractUserRepo('apbarrero/earlyad'),
+            { user: 'apbarrero', repo: 'earlyad' }
+         );
+      });
+      it('should return null if an invalid url is passed', function() {
+         assert.isNull(extractUserRepo('this is not a valid URL'));
+      });
+   });
+
+   xdescribe('checkDepRepo', function() {
       var repo = 'git://github.com/apbarrero/earlyad.git';
 
       it('should return the repository dependency list properly updated when one dependency needs to be updated', function() {

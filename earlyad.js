@@ -58,6 +58,21 @@ function checkDepVersion(pack, dependency) {
    return null;
 }
 
+// Extract user and repo name form a github URL
+function extractUserRepo(url) {
+   var match = /^([^\/]+)\/([^\/\.]+)$/.exec(url);
+   if (match) {
+      return { user: match[1], repo: match[2] };
+   }
+   else {
+      match = /^git:\/\/github.com\/(.*\/.*).git/.exec(url);
+      if (match) {
+         return extractUserRepo(match[1]);
+      }
+   }
+   return null;
+}
+
 // Check a `repo` to see if `dependency` is included in its
 // dependency list with version lesser than `dependency.version`
 //
@@ -69,4 +84,5 @@ function checkDepRepo(repo, dependency) {
 
 module.exports.isNewerVersion = isNewerVersion;
 module.exports.checkDepVersion = checkDepVersion;
+module.exports.extractUserRepo = extractUserRepo;
 module.exports.checkDepRepo = checkDepRepo;
