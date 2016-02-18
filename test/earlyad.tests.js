@@ -175,10 +175,17 @@ describe('Early adopter', function() {
    });
 
    describe('fetchPackageJson', function() {
-      it('should return package.json contents for a github repository', function() {
-         fetchPackageJson('apbarrero/earlyad').then(function(pack) {
-            assert.equal(pack.name, 'earlyad');
-            assert.equal(pack.description, "Early adopter is a node.js dependency checker and updater");
+      it('should return package.json contents for a github repository', function(done) {
+         fetchPackageJson('apbarrero/earlyad', function(err, res) {
+            if (err) {
+               throw err;
+               done();
+            }
+            else {
+               assert.equal(res.name, 'earlyad');
+               assert.equal(res.description, "Early adopter is a node.js dependency checker and updater");
+               done();
+            }
          });
       });
    });

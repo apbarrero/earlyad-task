@@ -2,7 +2,6 @@
 
 var semver = require('semver');
 var GitHubApi = require('github');
-var promisify = require('promisify-node');
 
 github = new GitHubApi({
    // required
@@ -91,16 +90,19 @@ function extractUserRepo(url) {
 
 // Return the contents of `package.json` for a github repo at `repoUrl`
 // `repoUrl` may have a full git or abbreviated URL
-function fetchPackageJson(repoUrl, ref) {
+function fetchPackageJson(repoUrl, done) {
    var repo = extractUserRepo(repoUrl);
-   return promisify(github.repos.getContent)({
+   github.repos.getContent({
       user: repo.user,
       repo: repo.repo,
       path: "package.json"
-   }).then(function(err, res) {
-      return JSON.parse(new Buffer(res.content, 'base64').toString('ascii'));
+   }, function(err, res) {
+      if (err) done(err);
+      else {
+         done(null, JSON.parse(new Buffer(res.content, 'base64').toString('ascii')));
+      }
    });
-}
+};
 
 // Check a `repo` to see if `dependency` is included in its
 // dependency list with version lesser than `dependency.version`
