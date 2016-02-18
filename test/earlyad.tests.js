@@ -190,17 +190,21 @@ describe('Early adopter', function() {
       });
    });
 
-   xdescribe('checkDepRepo', function() {
+   describe('checkDepRepo', function() {
       var repo = 'git://github.com/apbarrero/earlyad.git';
 
-      it('should return the repository dependency list properly updated when one dependency needs to be updated', function() {
-         var newSemver = { url: 'git://github.com/npm/node-semver.git', version: '5.2.0' };
-         assert.deepEqual(
-            checkDepRepo(repo, newSemver),
-            {
-               "semver": "git://github.com/apbarrero/earlyad.git#5.2.0"
+      it('should return the repository dependency list properly updated when one dependency needs to be updated', function(done) {
+         var newSemver = { url: 'git://github.com/npm/node-semver.git', version: '99.99.99' };
+         checkDepRepo(repo, newSemver, function(err, res) {
+            if (err) {
+               throw err;
+               done();
             }
-         );
+            else {
+               assert.propertyVal(res, "semver", "git://github.com/npm/node-semver.git#99.99.99");
+               done();
+            }
+         })
       });
    });
 });

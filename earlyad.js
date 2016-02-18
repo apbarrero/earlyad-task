@@ -109,9 +109,15 @@ function fetchPackageJson(repoUrl, done) {
 //
 // Return the corresponding package.json updated value for
 // `dependencies` property
-function checkDepRepo(repo, dependency) {
-   return {};
+function checkDepRepo(repo, dependency, done) {
+   fetchPackageJson(repo, function(err, res) {
+      if (err) done(err);
+      else {
+         done(null, checkDepVersion(res, dependency));
+      }
+   });
 }
+
 
 module.exports.isNewerVersion = isNewerVersion;
 module.exports.checkDepVersion = checkDepVersion;
