@@ -2,6 +2,7 @@
 
 var semver = require('semver');
 var GitHubApi = require('github');
+var async = require('async');
 
 github = new GitHubApi({
    // required
@@ -118,9 +119,29 @@ function checkDepRepo(repo, dependency, done) {
    });
 }
 
+// Check a list of repositories to see if they have `dependency`
+// in their dependency list and a version lesser than `dependency.version`
+//
+// Return a list of repository urls mapped to the
+// corresponding package.json updated `dependencies` property
+function checkDepRepoList(repos, dependency, done) {
+   async.map(repos, function(repo, callback) {
+      checkDepRepo(repo, dependency, function(err, res) {
+         if (err) callback(err);
+         else
+            callback(null, res);
+      });
+   }
+   , function(err, res) {
+      if (err) done(err);
+      else
+         done(null, res.filter(function(item) { return item !== null; }));
+   });
+}
 
 module.exports.isNewerVersion = isNewerVersion;
 module.exports.checkDepVersion = checkDepVersion;
 module.exports.extractUserRepo = extractUserRepo;
 module.exports.fetchPackageJson = fetchPackageJson;
 module.exports.checkDepRepo = checkDepRepo;
+module.exports.checkDepRepoList = checkDepRepoList;

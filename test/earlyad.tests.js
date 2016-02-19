@@ -4,6 +4,7 @@ var EarlyAd = require('../earlyad');
 var isNewerVersion = EarlyAd.isNewerVersion;
 var checkDepVersion = EarlyAd.checkDepVersion;
 var checkDepRepo = EarlyAd.checkDepRepo;
+var checkDepRepoList = EarlyAd.checkDepRepoList;
 var extractUserRepo = EarlyAd.extractUserRepo;
 var fetchPackageJson = EarlyAd.fetchPackageJson;
 var assert = require('chai').assert;
@@ -217,6 +218,30 @@ describe('Early adopter', function() {
                assert.isNull(res);
                done();
             }
+         });
+      });
+   });
+
+   describe('checkDepRepoList', function() {
+      var repolist = [
+         "apbarrero/earlyad",
+         "git://github.com/auth0/wt-cli.git"
+      ];
+
+      describe('when one repo in the list needs to update the dependency', function() {
+         it('should return one updated dependency list', function(done) {
+            var newSemver = { url: 'git://github.com/npm/node-semver.git', version: '99.99.99' };
+            checkDepRepoList(repolist, newSemver, function(err, res) {
+               if (err) {
+                  throw err;
+                  done();
+               }
+               else {
+                  assert.lengthOf(res, 1);
+                  assert.propertyVal(res[0], "semver", "git://github.com/npm/node-semver.git#99.99.99");
+                  done();
+               }
+            });
          });
       });
    });

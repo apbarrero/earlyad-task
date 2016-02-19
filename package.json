@@ -16,6 +16,7 @@
   "author": "Antonio Perez Barrero <apbarrero@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "async": "^1.5.2",
     "github": "~0.2.4",
     "semver": "git://github.com/npm/node-semver.git#v5.1.0"
   },
