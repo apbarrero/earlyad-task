@@ -127,14 +127,15 @@ function checkDepRepoList(repos, dependency, done) {
    async.map(repos, function(repo, callback) {
       checkDepRepo(repo, dependency, function(err, res) {
          if (err) callback(err);
-         else
-            callback(null, res);
+         else {
+            callback(null, { "repo": repo, "pack": res });
+         }
       });
    }
    , function(err, res) {
       if (err) done(err);
       else
-         done(null, res.filter(function(item) { return item !== null; }));
+         done(null, res.filter(function(item) { return item.pack !== null; }));
    });
 }
 

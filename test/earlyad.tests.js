@@ -256,7 +256,8 @@ describe('Early adopter', function() {
                }
                else {
                   assert.lengthOf(res, 1);
-                  var earlyadPack = res[0];
+                  assert.equal(res[0].repo, 'apbarrero/earlyad');
+                  var earlyadPack = res[0].pack;
                   assert.equal(earlyadPack.name, 'earlyad');
                   assert.propertyVal(earlyadPack.dependencies, "semver", newSemver.url + "#" + newSemver.version);
                   done();
