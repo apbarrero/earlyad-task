@@ -201,10 +201,23 @@ describe('Early adopter', function() {
                done();
             }
             else {
-               assert.propertyVal(res, "semver", "git://github.com/npm/node-semver.git#99.99.99");
+               assert.propertyVal(res, "semver", newSemver.url + "#" + newSemver.version);
                done();
             }
          })
+      });
+      it('should return null if repo doesn\'t include the given dependency', function(done) {
+         var newSemver = { url: 'git://github.com/dontdepend/onthis.git', version: '99.99.99' };
+         checkDepRepo(repo, newSemver, function(err, res) {
+            if (err) {
+               throw err;
+               done();
+            }
+            else {
+               assert.isNull(res);
+               done();
+            }
+         });
       });
    });
 });
