@@ -14,8 +14,13 @@ github = new GitHubApi({
    pathPrefix: "",
    timeout: 5000,
    headers: {
-      "user-agent": "auth0-pr-checker"
+      "user-agent": "auth0-early-adopter"
    }
+});
+
+github.authenticate({
+   type: "oauth",
+   token: process.env.GITHUB_TOKEN
 });
 
 // Checks if `newVersion` is actually greater than `curVersion`
@@ -136,6 +141,93 @@ function checkDepRepoList(repos, dependency, done) {
       if (err) done(err);
       else
          done(null, res.filter(function(item) { return item.pack !== null; }));
+   });
+}
+
+// Creates a pull request in the given github `data.repoUrl` with a single
+// commit updating contents of `package.json` with `data.pack`.
+// Pull request title will be `data.title`
+function createPullRequest(data, done) {
+   var repo = extractUserRepo(data.repoUrl);
+   var packageJsonSha, headCommitSha;
+   var branch = 'earlyad-' + Date().getTime();
+
+   async.series([
+      function(callback) {
+      github.repos.getBranch({
+         user: repo.user,
+         repo: repo.repo,
+         branch: "master"
+      }, function(err, res) {
+         if (err) callback(err);
+         else {
+            headCommitSha = res.commit.sha;
+            callback(null, res);
+         }
+      });
+   },
+   function(callback) {
+      github.repos.getContent({
+         user: repo.user,
+         repo: repo.repo,
+         path: "package.json"
+      }, function(err, res) {
+         if (err) callback(err);
+         else {
+            packageJsonSha = res.sha;
+            callback(null, res);
+         }
+      });
+   },
+   function(callback) {
+      github.gitdata.createReference({
+         user: repo.user,
+         repo: repo.repo,
+         ref: "refs/heads/" + branch,
+         sha: headCommitSha
+      }, function(err, res) {
+         if (err) callback(err);
+         else {
+            callback(null, res);
+         }
+      });
+   },
+   function(callback) {
+      github.repos.updateFile({
+         user: repo.user,
+         repo: repo.repo,
+         path: "package.json",
+         sha: packageJsonSha,
+         content: new Buffer(JSON.stringify(data.pack)).toString('base64'),
+         message: data.title,
+         branch: branch
+      }, function(err, res) {
+         if (err) callback(err);
+         else {
+            callback(null, res);
+         }
+      });
+   },
+   function(callback) {
+      github.pullRequests.create({
+         user: repo.user,
+         repo: repo.repo,
+         title: data.title,
+         base: 'master',
+         head: branch
+      }, function(err, res) {
+         if (err) callback(err);
+         else {
+            callback(null, res);
+         }
+      });
+   }
+   ], function(err, res) {
+      if (err) done(err);
+      else {
+         console.log(res);
+         done(null, res);
+      }
    });
 }
 
