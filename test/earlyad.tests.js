@@ -64,15 +64,23 @@ describe('Early adopter', function() {
             assert.deepEqual(
                checkDepVersion(pack, { url: "git://github.com/baz/bar.git", version: "1.0.1" }),
                {
-                  "bar": "git://github.com/baz/bar.git#1.0.1",
-                  "bar2": "baz/bar2#1.2.3"
+                  "name": "foo",
+                  "version": "1.0.0",
+                  "dependencies": {
+                     "bar": "git://github.com/baz/bar.git#1.0.1",
+                     "bar2": "baz/bar2#1.2.3"
+                  }
                }
             );
             assert.deepEqual(
                checkDepVersion(pack, { url: "git://github.com/baz/bar2.git", version: "1.3.0" }),
                {
-                  "bar": "git://github.com/baz/bar.git#1.0.0",
-                  "bar2": "baz/bar2#1.3.0"
+                  "name": "foo",
+                  "version": "1.0.0",
+                  "dependencies": {
+                     "bar": "git://github.com/baz/bar.git#1.0.0",
+                     "bar2": "baz/bar2#1.3.0"
+                  }
                }
             );
          });
@@ -106,15 +114,23 @@ describe('Early adopter', function() {
             assert.deepEqual(
                checkDepVersion(pack, { url: "git://github.com/baz/bar.git", version: "1.0.1" }),
                {
-                  "bar": "git://github.com/baz/bar.git#1.0.1",
-                  "bar2": "baz/bar2#1.2.3"
+                  "name": "foo",
+                  "version": "1.0.0",
+                  "dependencies": {
+                     "bar": "git://github.com/baz/bar.git#1.0.1",
+                     "bar2": "baz/bar2#1.2.3"
+                  }
                }
             );
             assert.deepEqual(
                checkDepVersion(pack, { url: "git://github.com/baz/bar2.git", version: "1.3.0" }),
                {
-                  "bar": "git://github.com/baz/bar.git#1.0.0",
-                  "bar2": "baz/bar2#1.3.0"
+                  "name": "foo",
+                  "version": "1.0.0",
+                  "dependencies": {
+                     "bar": "git://github.com/baz/bar.git#1.0.0",
+                     "bar2": "baz/bar2#1.3.0"
+                  }
                }
             );
          });
@@ -194,7 +210,7 @@ describe('Early adopter', function() {
    describe('checkDepRepo', function() {
       var repo = 'git://github.com/apbarrero/earlyad.git';
 
-      it('should return the repository dependency list properly updated when one dependency needs to be updated', function(done) {
+      it('should return the repository package object with dependency list properly updated when one dependency needs to be updated', function(done) {
          var newSemver = { url: 'git://github.com/npm/node-semver.git', version: '99.99.99' };
          checkDepRepo(repo, newSemver, function(err, res) {
             if (err) {
@@ -202,7 +218,9 @@ describe('Early adopter', function() {
                done();
             }
             else {
-               assert.propertyVal(res, "semver", newSemver.url + "#" + newSemver.version);
+               var earlyadPack = res;
+               assert.equal(earlyadPack.name, 'earlyad');
+               assert.propertyVal(earlyadPack.dependencies, "semver", newSemver.url + "#" + newSemver.version);
                done();
             }
          })
@@ -229,7 +247,7 @@ describe('Early adopter', function() {
       ];
 
       describe('when one repo in the list needs to update the dependency', function() {
-         it('should return one updated dependency list', function(done) {
+         it('should return one package object with the updated dependency list', function(done) {
             var newSemver = { url: 'git://github.com/npm/node-semver.git', version: '99.99.99' };
             checkDepRepoList(repolist, newSemver, function(err, res) {
                if (err) {
@@ -238,7 +256,9 @@ describe('Early adopter', function() {
                }
                else {
                   assert.lengthOf(res, 1);
-                  assert.propertyVal(res[0], "semver", "git://github.com/npm/node-semver.git#99.99.99");
+                  var earlyadPack = res[0];
+                  assert.equal(earlyadPack.name, 'earlyad');
+                  assert.propertyVal(earlyadPack.dependencies, "semver", newSemver.url + "#" + newSemver.version);
                   done();
                }
             });

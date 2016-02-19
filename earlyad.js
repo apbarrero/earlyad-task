@@ -49,8 +49,7 @@ function normalize(url) {
 // Looks for `dependency.url` to be included in `package.dependencies`
 // and checks for `version` to be newer.
 //
-// Returns the updated `dependencies` object for `package` if so
-// and null otherwise
+// Returns the updated `package` object if so and null otherwise
 //
 // - `pack`: contents of a `package.json`
 // - `dependency`: {
@@ -65,9 +64,9 @@ function checkDepVersion(pack, dependency) {
       if (match) {
          var currentVersion = match[1];
          if (isNewerVersion(dependency.version, currentVersion)) {
-            var dependencies = JSON.parse(JSON.stringify(pack.dependencies));
-            dependencies[dep] = dependencies[dep].replace(/#.*$/, "#" + dependency.version);
-            return dependencies;
+            var pack = JSON.parse(JSON.stringify(pack));
+            pack.dependencies[dep] = pack.dependencies[dep].replace(/#.*$/, "#" + dependency.version);
+            return pack;
          }
       }
    }
