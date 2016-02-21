@@ -203,6 +203,7 @@ function createPullRequest(data, done) {
       }, function(err, res) {
          if (err) callback(err);
          else {
+            console.log("Created pull request " + res.url);
             callback(null, res);
          }
       });
@@ -217,7 +218,6 @@ function createPullRequest(data, done) {
    ], function(err, res) {
       if (err) done(err);
       else {
-         console.log(res);
          done(null, res);
       }
    });
@@ -236,7 +236,6 @@ module.exports = function (ctx, done) {
       // required
       version: "3.0.0",
       // optional
-      debug: true,
       protocol: "https",
       host: "api.github.com",
       pathPrefix: "",
@@ -276,7 +275,7 @@ module.exports = function (ctx, done) {
                         return item.repo;
                      });
                      console.log("Number of repositories to update: " + reposToUpdate.length);
-                     console.log("Detected need to update " + dependency.url + " on " + repo + " for " + JSON.stringify(reposToUpdateNames));
+                     console.log("Detected need to update " + JSON.stringify(reposToUpdateNames) + " dependent on " + dependency.url);
                   }
                   else {
                      console.log("No need to update " + repo + " on any repos in the list");
@@ -297,7 +296,6 @@ module.exports = function (ctx, done) {
             }, function(err, res) {
                if (err) callback(err);
                else {
-                  console.log("Created pull request for " + res);
                   callback(null);
                }
             });
