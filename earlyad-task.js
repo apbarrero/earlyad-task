@@ -18,11 +18,11 @@ function isNewerVersion(newVersion, curVersion) {
 
 function normalize(url) {
    // 'user/repo#x.y.z' format, with optional version
-   var pattern = /(^[^\/]+\/[^\/#]+)(#.*)?$/;
-   if (url.startsWith('git://')) {
+   if (url.substring(0, 6) == "git://") {
       return url;
    }
    else {
+      var pattern = /(^[^\/]+\/[^\/#]+)(#.*)?$/;
       var match = pattern.exec(url);
       if (match) {
          var nurl = "git://github.com/" + match[1] + ".git";
