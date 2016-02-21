@@ -2,6 +2,7 @@
 var semver = require('semver');
 var GitHubApi = require('github');
 var async = require('async');
+var moment = require('moment');
 
 
 // Checks if `newVersion` is actually greater than `curVersion`
@@ -131,7 +132,7 @@ function checkDepRepoList(repos, dependency, done) {
 function createPullRequest(data, done) {
    var repo = extractUserRepo(data.repoUrl);
    var packageJsonSha, headCommitSha;
-   var branch = 'earlyad-' + Date().getTime();
+   var branch = 'earlyad-' + moment().valueOf();
 
    async.series([
       function(callback) {
@@ -179,7 +180,7 @@ function createPullRequest(data, done) {
          repo: repo.repo,
          path: "package.json",
          sha: packageJsonSha,
-         content: new Buffer(JSON.stringify(data.pack)).toString('base64'),
+         content: new Buffer(JSON.stringify(data.pack, null, 2)).toString('base64'),
          message: data.title,
          branch: branch
       }, function(err, res) {
@@ -220,8 +221,6 @@ function createPullRequest(data, done) {
 //module.exports.checkDepRepoList = checkDepRepoList;
 
 module.exports = function (ctx, done) {
-   //console.log("BODY: " + JSON.stringify(ctx.body));
-   //console.log("--------------");
 
    github = new GitHubApi({
       // required
@@ -237,6 +236,11 @@ module.exports = function (ctx, done) {
       }
    });
 
+   var repolist = [
+      "apbarrero/earlyad",
+      "git://github.com/auth0/wt-cli.git"
+   ];
+
    github.authenticate({
       type: "oauth",
       token: ctx.data.GITHUB_TOKEN
@@ -249,18 +253,50 @@ module.exports = function (ctx, done) {
    else {
       var newVersion = webhook.ref;
       var repo = webhook.repository.git_url;
-      //console.log("Repository: " + repo);
-      //console.log("New version: " + newVersion);
-      var out;
-      if (isNewerVersion(newVersion, '0.0.42')) {
-         out = "Version " + newVersion + " for " + repo + " is greater than 0.0.42";
-      }
-      else {
-         out = "Version " + newVersion + " for " + repo + " is not greater than 0.0.42";
-      }
+      var dependency = { url: repo, version: newVersion };
+      var reposToUpdate;
+      async.series([
+         function(callback) {
+            checkDepRepoList(repolist, dependency, function(err, res) {
+               if (err) callback(err);
+               else {
+                  if (res && res.length > 0) {
+                     reposToUpdate = res;
+                     var reposToUpdateNames = reposToUpdate.map(function(item, i, array) {
+                        return item.repo;
+                     });
+                     console.log("Number of repositories to update: " + reposToUpdate.length);
+                     console.log("Detected need to update " + dependency.url + " on " + repo + " for " + JSON.stringify(reposToUpdateNames));
+                  }
+                  else {
+                     console.log("No need to update " + repo + " on any repos in the list");
+                  }
+                  callback();
+               }
+            });
+         },
+         function(callback) {
+            async.map(reposToUpdate, function(r, callback) {
+               var data = {
+                  repoUrl: r.repo,
+                  pack: r.pack,
+                  title: "Update dependency on " + repo + " to new version " + newVersion
+               };
 
-      console.log(out);
-      done(null, out);
+               createPullRequest(data, callback);
+            }, function(err, res) {
+               if (err) callback(err);
+               else {
+                  console.log("Created pull request for " + res);
+                  callback(null);
+               }
+            });
+         }
+      ], function(err, res) {
+         if (err) done(err)
+         else
+            done(null, "Success");
+      });
    }
 };
 
