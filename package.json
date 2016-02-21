@@ -4,6 +4,7 @@
   "description": "Early adopter is a node.js dependency checker and updater",
   "main": "earlyad.js",
   "directories": {
+    "lib": "lib",
     "test": "test"
   },
   "scripts": {

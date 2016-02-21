@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var EarlyAd = require('../earlyad');
+var EarlyAd = require('../lib/earlyad');
 var isNewerVersion = EarlyAd.isNewerVersion;
 var checkDepVersion = EarlyAd.checkDepVersion;
 var checkDepRepo = EarlyAd.checkDepRepo;
