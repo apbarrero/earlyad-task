@@ -1,6 +1,6 @@
 {
   "name": "earlyad",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Early adopter is a node.js dependency checker and updater",
   "main": "earlyad.js",
   "directories": {
@@ -13,6 +13,10 @@
     "dependency",
     "github"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/apbarrero/earlyad.git"
+  },
   "author": "Antonio Perez Barrero <apbarrero@gmail.com>",
   "license": "ISC",
   "dependencies": {
