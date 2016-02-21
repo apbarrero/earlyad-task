@@ -134,8 +134,7 @@ function createPullRequest(data, done) {
    var packageJsonSha, headCommitSha;
    var branch = 'earlyad-' + moment().valueOf();
 
-   async.series([
-      function(callback) {
+   var getMasterBranchTipSha = function(callback) {
       github.repos.getBranch({
          user: repo.user,
          repo: repo.repo,
@@ -147,8 +146,9 @@ function createPullRequest(data, done) {
             callback(null, res);
          }
       });
-   },
-   function(callback) {
+   };
+
+   var getPackageJsonSha = function(callback) {
       github.repos.getContent({
          user: repo.user,
          repo: repo.repo,
@@ -160,8 +160,9 @@ function createPullRequest(data, done) {
             callback(null, res);
          }
       });
-   },
-   function(callback) {
+   };
+
+   var createNewBranch = function(callback) {
       github.gitdata.createReference({
          user: repo.user,
          repo: repo.repo,
@@ -173,8 +174,9 @@ function createPullRequest(data, done) {
             callback(null, res);
          }
       });
-   },
-   function(callback) {
+   };
+
+   var createCommitWithUpdatedPackageJson = function(callback) {
       github.repos.updateFile({
          user: repo.user,
          repo: repo.repo,
@@ -189,8 +191,9 @@ function createPullRequest(data, done) {
             callback(null, res);
          }
       });
-   },
-   function(callback) {
+   };
+
+   var submitPullRequest = function(callback) {
       github.pullRequests.create({
          user: repo.user,
          repo: repo.repo,
@@ -203,7 +206,14 @@ function createPullRequest(data, done) {
             callback(null, res);
          }
       });
-   }
+   };
+
+   async.series([
+      getMasterBranchTipSha,
+      getPackageJsonSha,
+      createNewBranch,
+      createCommitWithUpdatedPackageJson,
+      submitPullRequest
    ], function(err, res) {
       if (err) done(err);
       else {
