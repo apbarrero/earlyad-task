@@ -21,3 +21,8 @@ having this webhook, the webtask will be fired and if any of the repos in its li
 depends on the one that triggered the webhook, a pull request updating the version
 for the new tag will be created.
 
+## Todo
+
+- Single lib module to be bundled into webtask
+- Read list of repositories from DB
+- Update shrinkwrap files
