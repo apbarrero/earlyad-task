@@ -247,7 +247,8 @@ module.exports = function (ctx, done) {
 
    var repolist = [
       "apbarrero/earlyad",
-      "git://github.com/auth0/wt-cli.git"
+      "git://github.com/auth0/wt-cli.git",
+      "apbarrero/node-fake2"
    ];
 
    github.authenticate({
