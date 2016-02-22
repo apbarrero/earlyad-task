@@ -264,7 +264,7 @@ module.exports = function (ctx, done) {
       var newVersion = webhook.ref;
       var repo = webhook.repository.git_url;
       var dependency = { url: repo, version: newVersion };
-      var reposToUpdate;
+      var reposToUpdate = [];
       async.series([
          function(callback) {
             checkDepRepoList(repolist, dependency, function(err, res) {
