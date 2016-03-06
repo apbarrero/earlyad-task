@@ -4,7 +4,7 @@
   "description": "Run Early adopter as a webtask",
   "main": "earlyad-task.js",
   "scripts": {
-     "bundle": "wt-bundle --output ./build/earlyad-task.js ./earlyad-task.js"
+    "bundle": "wt-bundle --output ./build/earlyad-task.js ./earlyad-task.js"
   },
   "keywords": [
     "dependency",
