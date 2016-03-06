@@ -3,12 +3,9 @@ var async = require('async');
 
 module.exports = function (ctx, done) {
 
-   var ea = new EarlyAd({ token: ctx.data.GITHUB_TOKEN });
-
    var repolist = [
-      "apbarrero/earlyad",
+      "apbarrero/earlyad-task",
       "git://github.com/auth0/wt-cli.git",
-      "apbarrero/node-fake2"
    ];
 
    var webhook = ctx.body;
@@ -16,13 +13,15 @@ module.exports = function (ctx, done) {
       done(null, "No tag update, nothing to do");
    }
    else {
-      var newVersion = webhook.ref;
       var repo = webhook.repository.git_url;
-      var dependency = { url: repo, version: newVersion };
+      var newVersion = webhook.ref;
+
+      var dep = new EarlyAd({ url: repo, version: newVersion }, { token: ctx.data.GITHUB_TOKEN });
+
       var reposToUpdate = [];
       async.series([
          function(callback) {
-            ea.checkDepRepoList(repolist, dependency, function(err, res) {
+            dep.checkDepRepoList(repolist, function(err, res) {
                if (err) callback(err);
                else {
                   if (res && res.length > 0) {
@@ -48,7 +47,7 @@ module.exports = function (ctx, done) {
                   title: "Update dependency on " + repo + " to new version " + newVersion
                };
 
-               ea.createPullRequest(data, callback);
+               dep.createPullRequest(data, callback);
             }, function(err, res) {
                if (err) callback(err);
                else {
